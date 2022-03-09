@@ -1,3 +1,5 @@
+import { Component } from 'react';
+
 import AppInfo from '../app-info/app-info';
 import SearchPanel from '../search-panel/search-panel';
 import AppFilter from '../app-filter/app-filter';
@@ -6,20 +8,72 @@ import EmployersAddForm from '../employers-add-form/employers-add-form';
 
 import './app.css';
 
-function App() {
-  return (
-    <div className="app">
-      <AppInfo />
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      data: [
+        { name: "John C.", salary: 800, rise: false, increase: true, id: "1" },
+        { name: "Tom L.", salary: 1000, rise: true, increase: false, id: "2" },
+        { name: "Carl W.", salary: 500, rise: false, increase: false, id: "3" },
+      ],
+    };
+    this.maxId = 4;
+  }
 
-      <div className="search-panel">
-        <SearchPanel />
-        <AppFilter />
+  onToggleProp = (id, prop) => {
+    this.setState(({ data }) => ({
+      data: data.map(item => {
+        if (item.id === id) {
+          return { ...item, [prop]: !item[prop] }
+        }
+        return item;
+      })
+    }))
+  }
+
+  getIncreaseEmployers = () => {
+    return this.state.data.filter(item => item.increase === true).length;
+  }
+
+  addItem = (name, salary) => {
+    const newItem = {
+      name,
+      salary,
+      id: this.maxId++,
+    };
+
+    this.setState(({ data }) => {
+      const newArr = [...data, newItem];
+      return {
+        data: newArr,
+      }
+    })
+  }
+
+  deleteItem = (id) => {
+    this.setState(({ data }) => {
+      return {
+        data: data.filter((item) => item.id !== id),
+      }
+    })
+  }
+
+  render() {
+    return (
+      <div className="app" >
+        <AppInfo employersCount={this.state.data.length} increaseCount={this.getIncreaseEmployers()} />
+
+        <div className="search-panel">
+          <SearchPanel />
+          <AppFilter />
+        </div>
+
+        <EmployersList onToggleProp={this.onToggleProp} onDelete={this.deleteItem} data={this.state.data} />
+        <EmployersAddForm onAdd={this.addItem} />
       </div>
-
-      <EmployersList />
-      <EmployersAddForm />
-    </div>
-  );
+    );
+  }
 }
 
 export default App;
