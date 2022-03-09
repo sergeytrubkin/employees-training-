@@ -3,8 +3,8 @@ import { Component } from 'react';
 import AppInfo from '../app-info/app-info';
 import SearchPanel from '../search-panel/search-panel';
 import AppFilter from '../app-filter/app-filter';
-import EmployersList from '../employers-list/employers-list';
-import EmployersAddForm from '../employers-add-form/employers-add-form';
+import EmployeesList from '../employees-list/employees-list';
+import EmployeesAddForm from '../employees-add-form/employees-add-form';
 
 import './app.css';
 
@@ -32,7 +32,7 @@ class App extends Component {
     }))
   }
 
-  getIncreaseEmployers = () => {
+  getIncreaseEmployees = () => {
     return this.state.data.filter(item => item.increase === true).length;
   }
 
@@ -62,15 +62,15 @@ class App extends Component {
   render() {
     return (
       <div className="app" >
-        <AppInfo employersCount={this.state.data.length} increaseCount={this.getIncreaseEmployers()} />
+        <AppInfo employeesCount={this.state.data.length} increaseCount={this.getIncreaseEmployees()} />
 
         <div className="search-panel">
           <SearchPanel />
           <AppFilter />
         </div>
 
-        <EmployersList onToggleProp={this.onToggleProp} onDelete={this.deleteItem} data={this.state.data} />
-        <EmployersAddForm onAdd={this.addItem} />
+        <EmployeesList onToggleProp={this.onToggleProp} onDelete={this.deleteItem} data={this.state.data} />
+        <EmployeesAddForm onAdd={this.addItem} />
       </div>
     );
   }
