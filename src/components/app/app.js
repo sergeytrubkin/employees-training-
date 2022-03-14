@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import {Component} from 'react';
 
 import AppInfo from '../app-info/app-info';
 import SearchPanel from '../search-panel/search-panel';
@@ -13,19 +13,45 @@ class App extends Component {
     super();
     this.state = {
       data: [
-        { name: "John C.", salary: 800, rise: false, increase: true, id: "1" },
-        { name: "Tom L.", salary: 1000, rise: true, increase: false, id: "2" },
-        { name: "Carl W.", salary: 500, rise: false, increase: false, id: "3" },
+        {name: "John C.", salary: 800, rise: false, increase: true, id: "1"},
+        {name: "Tom L.", salary: 1000, rise: true, increase: false, id: "2"},
+        {name: "Carl W.", salary: 500, rise: false, increase: false, id: "3"},
+        {name: "Born T.", salary: 1500, rise: false, increase: false, id: "4"},
       ],
+      term: '',
+      filter: 'All',
     };
     this.maxId = 4;
   }
 
+  updateData = (term) => {
+    if (term.length === 0 && this.state.filter === 'All') {
+      return this.state.data;
+    }
+    const currentData = this.state.data.filter((item) => item.name.indexOf(term) > -1);
+    return currentData;
+  }
+
+  onSearchInput = (term) => {
+    this.setState({term})
+  }
+
+  filteredItems = (items, filter) => {
+    switch (filter) {
+      case 'rise':
+        return items.filter((item) => item.rise);
+      case 'more1000':
+        return items.filter((item) => item.salary > 1000);
+      default:
+        return items;
+    }
+  }
+
   onToggleProp = (id, prop) => {
-    this.setState(({ data }) => ({
+    this.setState(({data}) => ({
       data: data.map(item => {
         if (item.id === id) {
-          return { ...item, [prop]: !item[prop] }
+          return {...item, [prop]: !item[prop]}
         }
         return item;
       })
@@ -43,7 +69,7 @@ class App extends Component {
       id: this.maxId++,
     };
 
-    this.setState(({ data }) => {
+    this.setState(({data}) => {
       const newArr = [...data, newItem];
       return {
         data: newArr,
@@ -52,24 +78,30 @@ class App extends Component {
   }
 
   deleteItem = (id) => {
-    this.setState(({ data }) => {
+    this.setState(({data}) => {
       return {
         data: data.filter((item) => item.id !== id),
       }
     })
   }
 
+  onChangeFilter = (filter) => {
+    this.setState({filter});
+  }
+
   render() {
+    const currentData = this.filteredItems(this.updateData(this.state.term), this.state.filter);
+
     return (
       <div className="app" >
         <AppInfo employeesCount={this.state.data.length} increaseCount={this.getIncreaseEmployees()} />
 
         <div className="search-panel">
-          <SearchPanel />
-          <AppFilter />
+          <SearchPanel onSearchInput={this.onSearchInput} />
+          <AppFilter filter={this.state.filter} onChangeFilter={this.onChangeFilter} />
         </div>
 
-        <EmployeesList onToggleProp={this.onToggleProp} onDelete={this.deleteItem} data={this.state.data} />
+        <EmployeesList onToggleProp={this.onToggleProp} onDelete={this.deleteItem} data={currentData} />
         <EmployeesAddForm onAdd={this.addItem} />
       </div>
     );
